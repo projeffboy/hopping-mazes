@@ -50,6 +50,7 @@ public class MazeLoader : MonoBehaviour {
                 );
                 mazeCells[r, c].floor.name = "Floor (" + r + "," + c + ")";
                 mazeCells[r, c].floor.transform.Rotate(Vector3.right, 90f); // turn wall into floor
+                mazeCells[r, c].floor.layer = 8; // ground layer
 
                 if (c == 0) {
                     mazeCells[r, c].westWall = Instantiate(wall, transform) as GameObject;
