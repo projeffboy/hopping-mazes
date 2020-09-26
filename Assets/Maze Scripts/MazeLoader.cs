@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 public class MazeLoader : MonoBehaviour {
     public int mazeRows, mazeColumns;
@@ -15,7 +16,9 @@ public class MazeLoader : MonoBehaviour {
     public int endDoorColumn;
     public bool destroyAllInnerWalls = false;
     public Material vegetation;
-    public bool highlightPath;
+    public bool highlightPath = false;
+    public bool spawnProjectiles = false;
+    public bool smallerFloors = false;
 
     private MazeCell[,] mazeCells;
     private Material originalFloorMaterial;
@@ -49,11 +52,23 @@ public class MazeLoader : MonoBehaviour {
             goDestroyAllInnerWalls();
         }
 
+
         var shortestPath = ma.dfs.getShortestPath();
-        while (shortestPath.Count != 0) {
-            int[] point = shortestPath.Pop();
-            mazeCells[point[0], point[1]].floor.GetComponent<MeshRenderer>().material = originalFloorMaterial;
+
+        if (highlightPath) {
+            for (int i = 0; i < shortestPath.Length; i++) {
+                var point = shortestPath[i];
+                mazeCells[point[0], point[1]].floor.GetComponent<MeshRenderer>().material = originalFloorMaterial;
+            }
         }
+
+        /*
+        if (spawnProjectiles) {
+            for (int i = 1; i < 9; i++) {
+                Instantiate(wall, transform);
+            }
+        }
+        */
     }
 
     private void InitializeMaze() {
@@ -68,6 +83,9 @@ public class MazeLoader : MonoBehaviour {
                     -(size / 2f),
                     c * size
                 );
+                if (smallerFloors) {
+                    mazeCells[r, c].floor.transform.localScale *= 0.75f;
+                }
                 mazeCells[r, c].floor.name = "Floor (" + r + "," + c + ")";
                 mazeCells[r, c].floor.transform.Rotate(Vector3.right, 90f); // turn wall into floor
                 mazeCells[r, c].floor.layer = 8; // ground layer

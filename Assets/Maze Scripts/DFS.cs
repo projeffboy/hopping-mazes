@@ -60,12 +60,12 @@ public class DFS {
         stack.Pop();
     }
 
-    public Stack<int[]> getShortestPath() {
-        return new Stack<int[]>(new Stack<int[]>(shortestPath));
+    public int[][] getShortestPath() {
+        return shortestPath.ToArray();
     }
 
     public void printShortestPath() {
-        var shortestPathStack = getShortestPath();
+        var shortestPathStack = new Stack<int[]>(new Stack<int[]>(shortestPath));
 
         if (shortestPathStack.Count == 0) {
             Debug.Log("Empty");
