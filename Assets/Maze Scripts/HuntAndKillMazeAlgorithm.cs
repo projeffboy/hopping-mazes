@@ -7,9 +7,12 @@ public class HuntAndKillMazeAlgorithm : MazeAlgorithm {
 
     private bool courseComplete = false;
 
+    public DFS dfs;
+
     public HuntAndKillMazeAlgorithm(MazeCell[,] mazeCells) : base(mazeCells) {}
 
     public override void CreateMaze() {
+        dfs = new DFS(mazeRows, mazeColumns);
         HuntAndKill();
     }
 
@@ -24,28 +27,27 @@ public class HuntAndKillMazeAlgorithm : MazeAlgorithm {
 
     private void Kill() {
         while (RouteStillAvailable(currentRow, currentColumn)) {
-            // int direction = Random.Range (1, 5);
-            int direction = ProceduralNumberGenerator.GetNextNumber();
+            int direction = Random.Range (1, 5);
 
             if (direction == 1 && CellIsAvailable(currentRow - 1, currentColumn)) {
                 // North
-                DestroyWallIfItExists(mazeCells[currentRow, currentColumn].northWall);
-                DestroyWallIfItExists(mazeCells[currentRow - 1, currentColumn].southWall);
+                DestroyWallIfItExists(currentRow, currentColumn, "north");
+                DestroyWallIfItExists(currentRow - 1, currentColumn, "south");
                 currentRow--;
             } else if (direction == 2 && CellIsAvailable(currentRow + 1, currentColumn)) {
                 // South
-                DestroyWallIfItExists(mazeCells[currentRow, currentColumn].southWall);
-                DestroyWallIfItExists(mazeCells[currentRow + 1, currentColumn].northWall);
+                DestroyWallIfItExists(currentRow, currentColumn, "south");
+                DestroyWallIfItExists(currentRow + 1, currentColumn, "north");
                 currentRow++;
             } else if (direction == 3 && CellIsAvailable(currentRow, currentColumn + 1)) {
                 // east
-                DestroyWallIfItExists(mazeCells[currentRow, currentColumn].eastWall);
-                DestroyWallIfItExists(mazeCells[currentRow, currentColumn + 1].westWall);
+                DestroyWallIfItExists(currentRow, currentColumn, "east");
+                DestroyWallIfItExists(currentRow, currentColumn + 1, "west");
                 currentColumn++;
             } else if (direction == 4 && CellIsAvailable(currentRow, currentColumn - 1)) {
                 // west
-                DestroyWallIfItExists(mazeCells[currentRow, currentColumn].westWall);
-                DestroyWallIfItExists(mazeCells[currentRow, currentColumn - 1].eastWall);
+                DestroyWallIfItExists(currentRow, currentColumn, "west");
+                DestroyWallIfItExists(currentRow, currentColumn - 1, "east");
                 currentColumn--;
             }
 
@@ -101,9 +103,29 @@ public class HuntAndKillMazeAlgorithm : MazeAlgorithm {
         }
     }
 
-    private void DestroyWallIfItExists(GameObject wall) {
+    private void DestroyWallIfItExists(int row, int column, string compassPoint) {
+        GameObject wall = mazeCells[row, column].getWall(compassPoint);
+
         if (wall != null) {
             GameObject.Destroy(wall);
+
+            int linkedRow = row;
+            int linkedColumn = column;
+            switch (compassPoint) {
+                case "north":
+                    linkedRow -= 1;
+                    break;
+                case "south":
+                    linkedRow += 1;
+                    break;
+                case "east":
+                    linkedColumn += 1;
+                    break;
+                case "west":
+                    linkedColumn -= 1;
+                    break;
+            }
+            dfs.addEdge(new[] { row, column }, new[] { linkedRow, linkedColumn });
         }
     }
 
@@ -138,24 +160,23 @@ public class HuntAndKillMazeAlgorithm : MazeAlgorithm {
         bool wallDestroyed = false;
 
         while (!wallDestroyed) {
-            // int direction = Random.Range (1, 5);
-            int direction = ProceduralNumberGenerator.GetNextNumber();
+            int direction = Random.Range (1, 5);
 
             if (direction == 1 && row > 0 && mazeCells[row - 1, column].visited) {
-                DestroyWallIfItExists(mazeCells[row, column].northWall);
-                DestroyWallIfItExists(mazeCells[row - 1, column].southWall);
+                DestroyWallIfItExists(row, column, "north");
+                DestroyWallIfItExists(row - 1, column, "south");
                 wallDestroyed = true;
             } else if (direction == 2 && row < (mazeRows - 2) && mazeCells[row + 1, column].visited) {
-                DestroyWallIfItExists(mazeCells[row, column].southWall);
-                DestroyWallIfItExists(mazeCells[row + 1, column].northWall);
+                DestroyWallIfItExists(row, column, "south");
+                DestroyWallIfItExists(row + 1, column, "north");
                 wallDestroyed = true;
             } else if (direction == 3 && column > 0 && mazeCells[row, column - 1].visited) {
-                DestroyWallIfItExists(mazeCells[row, column].westWall);
-                DestroyWallIfItExists(mazeCells[row, column - 1].eastWall);
+                DestroyWallIfItExists(row, column, "west");
+                DestroyWallIfItExists(row, column - 1, "east");
                 wallDestroyed = true;
             } else if (direction == 4 && column < (mazeColumns - 2) && mazeCells[row, column + 1].visited) {
-                DestroyWallIfItExists(mazeCells[row, column].eastWall);
-                DestroyWallIfItExists(mazeCells[row, column + 1].westWall);
+                DestroyWallIfItExists(row, column, "east");
+                DestroyWallIfItExists(row, column + 1, "west");
                 wallDestroyed = true;
             }
         }

@@ -318,7 +318,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 562665435}
   m_LocalRotation: {x: 0, y: 0, z: 0.5, w: 0.8660254}
-  m_LocalPosition: {x: 32, y: 0, z: 12}
+  m_LocalPosition: {x: 32, y: 0, z: -12}
   m_LocalScale: {x: 3, y: 1, z: 3}
   m_Children: []
   m_Father: {fileID: 0}
@@ -432,11 +432,13 @@ MonoBehaviour:
   wall: {fileID: 101274, guid: 2a571ace6952b154ca2ff06b0540f264, type: 3}
   size: 6
   startDoorExists: 1
-  startDoorRow: 0
-  startDoorColumn: 2
+  startDoorRow: 2
+  startDoorColumn: 0
   endDoorExists: 1
-  endDoorRow: 4
-  endDoorColumn: 2
+  endDoorRow: 2
+  endDoorColumn: 4
+  destroyAllInnerWalls: 0
+  vegetation: {fileID: 0}
 --- !u!4 &1062459227
 Transform:
   m_ObjectHideFlags: 0
@@ -444,13 +446,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1062459225}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!1 &1200921842
 GameObject:
   m_ObjectHideFlags: 0
@@ -480,16 +482,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 334ef5519144d0e438a932a03abdacc0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mazeRows: 9
-  mazeColumns: 5
+  mazeRows: 5
+  mazeColumns: 9
   wall: {fileID: 101274, guid: 2a571ace6952b154ca2ff06b0540f264, type: 3}
   size: 6
   startDoorExists: 0
   startDoorRow: 0
   startDoorColumn: 0
   endDoorExists: 1
-  endDoorRow: 8
-  endDoorColumn: 2
+  endDoorRow: 2
+  endDoorColumn: 8
+  destroyAllInnerWalls: 1
+  vegetation: {fileID: 2100000, guid: ffa9f731b331c2e40a2d09ecab6118c2, type: 2}
 --- !u!4 &1200921844
 Transform:
   m_ObjectHideFlags: 0
@@ -497,13 +501,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1200921842}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: -55, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!1 &1810352119
 GameObject:
   m_ObjectHideFlags: 0

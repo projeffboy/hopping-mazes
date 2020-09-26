@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class MazeLoader : MonoBehaviour {
     public int mazeRows, mazeColumns;
@@ -12,27 +13,46 @@ public class MazeLoader : MonoBehaviour {
     public bool endDoorExists = false;
     public int endDoorRow;
     public int endDoorColumn;
-
+    public bool destroyAllInnerWalls = false;
+    public Material vegetation;
+    public bool highlightPath;
 
     private MazeCell[,] mazeCells;
+    private Material originalFloorMaterial;
 
     private void Start() {
+        originalFloorMaterial = wall.GetComponent<MeshRenderer>().sharedMaterial;
+
         InitializeMaze();
 
-        MazeAlgorithm ma = new HuntAndKillMazeAlgorithm(mazeCells);
+        HuntAndKillMazeAlgorithm ma = new HuntAndKillMazeAlgorithm(mazeCells);
         ma.CreateMaze();
 
+        ma.dfs.findShortestPath(
+            new[] { startDoorRow, startDoorColumn }, new[] { endDoorRow, endDoorColumn }
+        );
+
         if (startDoorExists) {
-            GameObject startDoor = mazeCells[startDoorRow, startDoorColumn].northWall;
+            GameObject startDoor = mazeCells[startDoorRow, startDoorColumn].westWall;
             if (startDoor != null) {
                 GameObject.Destroy(startDoor);
             }
         }
         if (endDoorExists) {
-            GameObject endDoor = mazeCells[endDoorRow, endDoorColumn].southWall;
+            GameObject endDoor = mazeCells[endDoorRow, endDoorColumn].eastWall;
             if (endDoor != null) {
                 GameObject.Destroy(endDoor);
             }
+        }
+
+        if (destroyAllInnerWalls) {
+            goDestroyAllInnerWalls();
+        }
+
+        var shortestPath = ma.dfs.getShortestPath();
+        while (shortestPath.Count != 0) {
+            int[] point = shortestPath.Pop();
+            mazeCells[point[0], point[1]].floor.GetComponent<MeshRenderer>().material = originalFloorMaterial;
         }
     }
 
@@ -51,6 +71,10 @@ public class MazeLoader : MonoBehaviour {
                 mazeCells[r, c].floor.name = "Floor (" + r + "," + c + ")";
                 mazeCells[r, c].floor.transform.Rotate(Vector3.right, 90f); // turn wall into floor
                 mazeCells[r, c].floor.layer = 8; // ground layer
+
+                if (vegetation != null) {
+                    mazeCells[r, c].floor.GetComponent<MeshRenderer>().material = vegetation;
+                }
 
                 if (c == 0) {
                     mazeCells[r, c].westWall = Instantiate(wall, transform) as GameObject;
@@ -89,6 +113,45 @@ public class MazeLoader : MonoBehaviour {
                 );
                 mazeCells[r, c].southWall.name = "South Wall (" + r + "," + c + ")";
                 mazeCells[r, c].southWall.transform.Rotate(Vector3.up * 90f);
+            }
+        }
+    }
+
+    private void goDestroyAllInnerWalls() {
+        for (int r = 0; r < mazeRows; r++) {
+            for (int c = 0; c < mazeColumns; c++) {
+                if (r != 0) {
+                    GameObject wall = mazeCells[r, c].northWall;
+
+                    if (wall != null) {
+                        GameObject.Destroy(wall);
+                    }
+                }
+
+                if (r != mazeRows - 1) {
+                    GameObject wall = mazeCells[r, c].southWall;
+
+                    if (wall != null) {
+                        GameObject.Destroy(wall);
+                    }
+                }
+
+                if (c != 0) {
+                    GameObject wall = mazeCells[r, c].westWall;
+
+                    if (wall != null) {
+                        GameObject.Destroy(wall);
+                    }
+                }
+
+                if (c != mazeColumns - 1) {
+                    GameObject wall = mazeCells[r, c].eastWall;
+
+                    if (wall != null) {
+                        GameObject.Destroy(wall);
+                    }
+                }
+
             }
         }
     }
