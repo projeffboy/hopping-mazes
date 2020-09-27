@@ -1,7 +1,6 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using System;
 
 public class MazeLoader : MonoBehaviour {
     public int mazeRows, mazeColumns;
@@ -9,16 +8,14 @@ public class MazeLoader : MonoBehaviour {
     public float size = 2f;
 
     public bool startDoorExists = false;
-    public int startDoorRow;
-    public int startDoorColumn;
     public bool endDoorExists = false;
-    public int endDoorRow;
-    public int endDoorColumn;
     public bool destroyAllInnerWalls = false;
     public Material vegetation;
     public bool highlightPath = false;
     public bool spawnProjectiles = false;
     public bool smallerFloors = false;
+    public Transform pickUpContainer; // stores all the pickups, needs to be a child of a maze
+    public GameObject pickUp; // when you pick it up, then it becomes a projectile
 
     private MazeCell[,] mazeCells;
     private Material originalFloorMaterial;
@@ -31,18 +28,14 @@ public class MazeLoader : MonoBehaviour {
         HuntAndKillMazeAlgorithm ma = new HuntAndKillMazeAlgorithm(mazeCells);
         ma.CreateMaze();
 
-        ma.dfs.findShortestPath(
-            new[] { startDoorRow, startDoorColumn }, new[] { endDoorRow, endDoorColumn }
-        );
-
         if (startDoorExists) {
-            GameObject startDoor = mazeCells[startDoorRow, startDoorColumn].westWall;
+            GameObject startDoor = mazeCells[0, mazeColumns / 2].northWall;
             if (startDoor != null) {
                 GameObject.Destroy(startDoor);
             }
         }
         if (endDoorExists) {
-            GameObject endDoor = mazeCells[endDoorRow, endDoorColumn].eastWall;
+            GameObject endDoor = mazeCells[mazeRows - 1, mazeColumns / 2].southWall;
             if (endDoor != null) {
                 GameObject.Destroy(endDoor);
             }
@@ -52,23 +45,38 @@ public class MazeLoader : MonoBehaviour {
             goDestroyAllInnerWalls();
         }
 
-
+        ma.dfs.findShortestPath(
+            new[] { 0, mazeColumns / 2 },
+            new[] { mazeRows - 1, mazeColumns / 2 }
+        );
         var shortestPath = ma.dfs.getShortestPath();
 
         if (highlightPath) {
             for (int i = 0; i < shortestPath.Length; i++) {
                 var point = shortestPath[i];
+
                 mazeCells[point[0], point[1]].floor.GetComponent<MeshRenderer>().material = originalFloorMaterial;
             }
         }
 
-        /*
-        if (spawnProjectiles) {
-            for (int i = 1; i < 9; i++) {
-                Instantiate(wall, transform);
+        if (pickUpContainer != null && pickUp != null) {
+            for (int i = 1; i < shortestPath.Length - 1; i++) {
+                var point = shortestPath[i];
+                int r = point[0];
+                int c = point[1];
+                Debug.Log(r + "," + c);
+
+                if (Random.value > 0.5) {
+                    GameObject pickUpObj = Instantiate(pickUp, pickUpContainer);
+                    pickUpObj.transform.localPosition = new Vector3(
+                        r * size,
+                        -(size / 2f) + 1,
+                        c * size
+                    );
+                    pickUpObj.name = "Pick Up (" + r + "," + c + ")";
+                }
             }
         }
-        */
     }
 
     private void InitializeMaze() {

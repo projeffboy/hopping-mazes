@@ -22,6 +22,10 @@ public class PlayerMovement : MonoBehaviour {
     private int projectileCount = 0;
     private bool gameOver = false;
 
+    public GameObject projectilePrefab;
+    public float projectileSpeed = 10f;
+    public Camera camera;
+
     // Start is called before the first frame update
     void Start() {
         gameOverText.text = "";
@@ -37,7 +41,7 @@ public class PlayerMovement : MonoBehaviour {
             if (isGrounded && velocity.y < 0) {
                 velocity.y = -2f;
             }
-
+            
             float x = Input.GetAxis("Horizontal");
             float z = Input.GetAxis("Vertical");
 
@@ -54,6 +58,10 @@ public class PlayerMovement : MonoBehaviour {
             controller.Move(velocity * Time.deltaTime);
 
             if (Input.GetMouseButtonDown(0) && projectileCount > 0) {
+                GameObject projectile = Instantiate(projectilePrefab);
+                projectile.transform.position = camera.transform.position + camera.transform.forward;
+                projectile.transform.forward = camera.transform.forward;
+
                 projectileCount--;
                 projectileCountText.text = projectileCount.ToString();
                 gameOverMessage(GameObject.FindWithTag("Pick Up") == null && projectileCount <= 0);
