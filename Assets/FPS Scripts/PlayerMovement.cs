@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerMovement : MonoBehaviour {
     public CharacterController controller;
@@ -16,36 +17,65 @@ public class PlayerMovement : MonoBehaviour {
     private Vector3 velocity;
     bool isGrounded;
 
+    public Text projectileCountText;
+    public Text gameOverText;
+    private int projectileCount = 0;
+    private bool gameOver = false;
+
     // Start is called before the first frame update
-    void Start()
-    {
-        
+    void Start() {
+        gameOverText.text = "";
     }
 
     // Update is called once per frame
-    void Update()
-    {
-        isGrounded = Physics.CheckSphere(
-            groundCheck.position, groundDistance, groundMask
-        );
+    void Update() {
+        if (!gameOver) {
+            isGrounded = Physics.CheckSphere(
+                groundCheck.position, groundDistance, groundMask
+            );
 
-        if (isGrounded && velocity.y < 0) {
-            velocity.y = -2f;
+            if (isGrounded && velocity.y < 0) {
+                velocity.y = -2f;
+            }
+
+            float x = Input.GetAxis("Horizontal");
+            float z = Input.GetAxis("Vertical");
+
+            Vector3 move = transform.right * x + transform.forward * z;
+
+            controller.Move(move * speed * Time.deltaTime);
+
+            if (Input.GetButtonDown("Jump") && isGrounded) {
+                velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+            }
+
+            velocity.y += gravity * Time.deltaTime;
+
+            controller.Move(velocity * Time.deltaTime);
+
+            if (Input.GetMouseButtonDown(0) && projectileCount > 0) {
+                projectileCount--;
+                projectileCountText.text = projectileCount.ToString();
+                gameOverMessage(GameObject.FindWithTag("Pick Up") == null && projectileCount <= 0);
+            }
+
+            gameOverMessage(transform.position.y < -20);
         }
+    }
 
-        float x = Input.GetAxis("Horizontal");
-        float z = Input.GetAxis("Vertical");
-
-        Vector3 move =  transform.right * x + transform.forward * z;
-
-        controller.Move(move * speed * Time.deltaTime);
-
-        if (Input.GetButtonDown("Jump") && isGrounded) {
-            velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+    void OnTriggerEnter(Collider other) {
+        if (other.gameObject.CompareTag("Pick Up")) {
+            other.gameObject.SetActive(false);
+            projectileCount++;
+            projectileCountText.text = projectileCount.ToString();
         }
+    }
 
-        velocity.y += gravity * Time.deltaTime;
-
-        controller.Move(velocity * Time.deltaTime);
+    void gameOverMessage(bool condition) {
+        if (condition) {
+            gameOverText.text = "You Lose";
+            Time.timeScale = 0;
+            gameOver = true;
+        }
     }
 }
