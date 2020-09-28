@@ -13,7 +13,7 @@ public class MazeLoader : MonoBehaviour {
     public Material vegetation;
     public bool highlightPath = false;
     public bool spawnProjectiles = false;
-    public bool smallerFloors = false;
+    public float floorMult = 1;
     public Transform pickUpContainer; // stores all the pickups, needs to be a child of a maze
     public GameObject pickUp; // when you pick it up, then it becomes a projectile
 
@@ -64,7 +64,6 @@ public class MazeLoader : MonoBehaviour {
                 var point = shortestPath[i];
                 int r = point[0];
                 int c = point[1];
-                Debug.Log(r + "," + c);
 
                 if (Random.value > 0.5) {
                     GameObject pickUpObj = Instantiate(pickUp, pickUpContainer);
@@ -91,9 +90,7 @@ public class MazeLoader : MonoBehaviour {
                     -(size / 2f),
                     c * size
                 );
-                if (smallerFloors) {
-                    mazeCells[r, c].floor.transform.localScale *= 0.75f;
-                }
+                mazeCells[r, c].floor.transform.localScale *= floorMult;
                 mazeCells[r, c].floor.name = "Floor (" + r + "," + c + ")";
                 mazeCells[r, c].floor.transform.Rotate(Vector3.right, 90f); // turn wall into floor
                 mazeCells[r, c].floor.layer = 8; // ground layer

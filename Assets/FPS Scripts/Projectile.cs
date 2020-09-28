@@ -15,11 +15,15 @@ public class Projectile : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-        Debug.Log(transform.forward);
         transform.position += transform.forward * speed * Time.deltaTime;
         lifeTimer -= Time.deltaTime;
         if (lifeTimer <= 0f) {
             Destroy(gameObject);
         }
+    }
+
+    private void OnTriggerEnter(Collider other) {
+            Destroy(gameObject);
+
     }
 }
