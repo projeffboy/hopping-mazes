@@ -1,7 +1,10 @@
 using System.Collections;
 using UnityEngine;
 
-public class HuntAndKillMazeAlgorithm : MazeAlgorithm {
+public class HuntAndKill {
+    private MazeCell[,] mazeCells;
+    private int mazeRows, mazeColumns;
+
     private int currentRow = 0;
     private int currentColumn = 0;
 
@@ -9,14 +12,19 @@ public class HuntAndKillMazeAlgorithm : MazeAlgorithm {
 
     public DFS dfs;
 
-    public HuntAndKillMazeAlgorithm(MazeCell[,] mazeCells) : base(mazeCells) {}
+    public HuntAndKill(MazeCell[,] mazeCells) {
+        this.mazeCells = mazeCells;
 
-    public override void CreateMaze() {
-        dfs = new DFS(mazeRows, mazeColumns);
-        HuntAndKill();
+        mazeRows = mazeCells.GetLength(0);
+        mazeColumns = mazeCells.GetLength(1);
     }
 
-    private void HuntAndKill() {
+    public void CreateMaze() {
+        dfs = new DFS(mazeRows, mazeColumns);
+        KillThenHunt();
+    }
+
+    private void KillThenHunt() {
         mazeCells[currentRow, currentColumn].visited = true;
 
         while(!courseComplete) {
@@ -104,7 +112,7 @@ public class HuntAndKillMazeAlgorithm : MazeAlgorithm {
     }
 
     private void DestroyWallIfItExists(int row, int column, string compassPoint) {
-        GameObject wall = mazeCells[row, column].getWall(compassPoint);
+        GameObject wall = mazeCells[row, column].GetWall(compassPoint);
 
         if (wall != null) {
             GameObject.Destroy(wall);

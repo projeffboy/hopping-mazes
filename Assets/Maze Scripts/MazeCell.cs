@@ -1,16 +1,16 @@
 using UnityEngine;
 
 public class MazeCell {
-    public bool visited = false;
     public GameObject
         northWall,
         southWall,
         eastWall,
         westWall,
         floor;
+    public bool visited = false;
 
-    public GameObject getWall(string compassPoint) {
-        switch (compassPoint) {
+    public GameObject GetWall(string compassDirection) {
+        switch (compassDirection.ToLower()) {
             case "north":
                 return northWall;
             case "south":

@@ -146,7 +146,7 @@ Transform:
   m_GameObject: {fileID: 13621139}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -1.8, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.125, y: 0.125, z: 0.125}
   m_Children: []
   m_Father: {fileID: 830980868}
   m_RootOrder: 2
@@ -840,6 +840,7 @@ MonoBehaviour:
   floorMult: 0.5
   pickUpContainer: {fileID: 0}
   pickUp: {fileID: 0}
+  destroyableFloors: 1
 --- !u!4 &1062459227
 Transform:
   m_ObjectHideFlags: 0
@@ -848,7 +849,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1062459225}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.75, z: 0}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -1082,6 +1083,7 @@ MonoBehaviour:
   floorMult: 1
   pickUpContainer: {fileID: 265454162}
   pickUp: {fileID: 9133555859064405004, guid: 9d0bd7e58b3f2c641bfc1b74acaa819f, type: 3}
+  destroyableFloors: 0
 --- !u!4 &1200921844
 Transform:
   m_ObjectHideFlags: 0

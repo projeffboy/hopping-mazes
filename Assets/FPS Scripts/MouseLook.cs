@@ -1,6 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+
+// Taken from Brackey's FPS tutorial: https://www.youtube.com/watch?v=_QajrabyTJc
 
 public class MouseLook : MonoBehaviour {
     public float mouseSensitivity = 100f;
@@ -8,22 +8,22 @@ public class MouseLook : MonoBehaviour {
 
     private float xRotation = 0f;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        Cursor.lockState = CursorLockMode.Locked;
+    void Start() {
+        Cursor.lockState = CursorLockMode.Locked; // hide the cursor
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
-        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
+    void Update() {
+        float mouseX = mouseValue('X');
+        float mouseY = mouseValue('Y');
 
         xRotation -= mouseY;
         xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
-        transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+        transform.localRotation = Quaternion.Euler(xRotation, 0, 0);
         playerBody.Rotate(Vector3.up * mouseX);
+    }
+
+    private float mouseValue(char axis) {
+        return Input.GetAxis("Mouse " + axis) * mouseSensitivity * Time.deltaTime;
     }
 }

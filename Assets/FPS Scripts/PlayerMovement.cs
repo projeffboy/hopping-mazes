@@ -1,7 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+
+// Partly taken from Brackey's FPS tutorial: https://www.youtube.com/watch?v=_QajrabyTJc
+// With help from Zenya's Unity FPS Course
 
 public class PlayerMovement : MonoBehaviour {
     public CharacterController controller;
@@ -57,17 +58,19 @@ public class PlayerMovement : MonoBehaviour {
 
             controller.Move(velocity * Time.deltaTime);
 
-            if (Input.GetMouseButtonDown(0) && projectileCount > 0) {
+            if (Input.GetMouseButtonDown(0) && projectileCount > 0 && !GameObject.FindWithTag("Projectile")) {
                 GameObject projectile = Instantiate(projectilePrefab);
+                projectile.GetComponent<Projectile>().playerCrossedAllMazes = transform.position.x > 35;
+                projectile.GetComponent<Projectile>().gameOverText = gameOverText;
                 projectile.transform.position = camera.transform.position + camera.transform.forward;
                 projectile.transform.forward = camera.transform.forward;
 
                 projectileCount--;
                 projectileCountText.text = projectileCount.ToString();
-                gameOverMessage(GameObject.FindWithTag("Pick Up") == null && projectileCount <= 0);
+                GameOverMessage(GameObject.FindWithTag("Pick Up") == null && projectileCount <= 0);
             }
 
-            gameOverMessage(transform.position.y < -20);
+            GameOverMessage(transform.position.y < -20);
         }
     }
 
@@ -79,7 +82,7 @@ public class PlayerMovement : MonoBehaviour {
         }
     }
 
-    void gameOverMessage(bool condition) {
+    void GameOverMessage(bool condition) {
         if (condition) {
             gameOverText.text = "You Lose";
             Time.timeScale = 0;

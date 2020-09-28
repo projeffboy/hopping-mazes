@@ -1,13 +1,18 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
+
+/*
+ * This code helps you find the shortest path in the maze
+ * This code is standard DFS, but I based my code on this: https://www.geeksforgeeks.org/print-the-path-between-any-two-nodes-of-a-tree-dfs/
+ * There was only C++ and Python version of their code, so I after understanding what it did, I then proceeded to convert it to C#.
+ */
 
 public class DFS {
     private int rows, columns;
 
-    public LinkedList<int[]>[,] adjList;
-    private Stack<int[]> stack = new Stack<int[]>();
-    private bool[,] vis;
+    public LinkedList<int[]>[,] adjList; // adjacency list
+    private Stack<int[]> stack = new Stack<int[]>(); // dfs stack
+    private bool[,] vis; // visited nodes
     private Stack<int[]> shortestPath;
 
     public DFS(int rows, int columns) {
@@ -34,24 +39,25 @@ public class DFS {
 
         stack = new Stack<int[]>();
 
-        helper(vis, source, target, stack);
+        Helper(vis, source, target, stack); // get ready for recursion
     }
 
-    private void helper(bool[,] vis, int[] currentPoint, int[] target, Stack<int[]> stack) {
-        stack.Push(currentPoint);
+    private void Helper(bool[,] vis, int[] currentPoint, int[] target, Stack<int[]> stack) {
+        stack.Push(currentPoint); // for remembering the path
 
-        if (currentPoint[0] == target[0] && currentPoint[1] == target[1]) {
+        if (currentPoint[0] == target[0] && currentPoint[1] == target[1]) { // path finally reaches target
             shortestPath = new Stack<int[]>(new Stack<int[]>(stack));
             return;
         }
-        vis[currentPoint[0], currentPoint[1]] = true;
+        vis[currentPoint[0], currentPoint[1]] = true; // mark node as visited
 
         LinkedList<int[]> point = adjList[currentPoint[0], currentPoint[1]];
         if (point.Count > 0) {
             LinkedListNode<int[]> adjPoint = point.First;
+            // where the DFS recursion takes place, applying the function to each unvisited adjacent node
             while (adjPoint != null) {
                 if (vis[adjPoint.Value[0], adjPoint.Value[1]] == false) {
-                    helper(vis, adjPoint.Value, target, stack);
+                    Helper(vis, adjPoint.Value, target, stack);
                 }
                 adjPoint = adjPoint.Next;
             }
@@ -60,11 +66,12 @@ public class DFS {
         stack.Pop();
     }
 
-    public int[][] getShortestPath() {
-        return shortestPath.ToArray();
+    public int[][] GetShortestPath() {
+        return shortestPath.ToArray(); // originally a stack
     }
 
-    public void printShortestPath() {
+    // Debugging Purposes
+    public void PrintShortestPath() {
         var shortestPathStack = new Stack<int[]>(new Stack<int[]>(shortestPath));
 
         if (shortestPathStack.Count == 0) {
