@@ -750,16 +750,17 @@ MonoBehaviour:
   gravity: -20
   jumpHeight: 2
   groundCheck: {fileID: 13621140}
-  groundDistance: 0.4
   groundMask:
     serializedVersion: 2
     m_Bits: 256
+  groundDistance: 0.25
   projectileCountText: {fileID: 661221283}
   gameOverText: {fileID: 142002900}
+  camera: {fileID: 1973230736}
   projectilePrefab: {fileID: 7809198161883175156, guid: 1b52a95d3ab503e41a4ece04b5f521cf,
     type: 3}
   projectileSpeed: 10
-  camera: {fileID: 1973230736}
+  finishedMazeX: 27
 --- !u!1 &950678793
 GameObject:
   m_ObjectHideFlags: 0
@@ -837,10 +838,10 @@ MonoBehaviour:
   vegetation: {fileID: 0}
   highlightPath: 0
   spawnProjectiles: 0
-  floorMult: 0.5
+  floorMult: 0.55
+  destroyableFloors: 1
   pickUpContainer: {fileID: 0}
   pickUp: {fileID: 0}
-  destroyableFloors: 1
 --- !u!4 &1062459227
 Transform:
   m_ObjectHideFlags: 0
@@ -1081,9 +1082,9 @@ MonoBehaviour:
   highlightPath: 1
   spawnProjectiles: 0
   floorMult: 1
+  destroyableFloors: 0
   pickUpContainer: {fileID: 265454162}
   pickUp: {fileID: 9133555859064405004, guid: 9d0bd7e58b3f2c641bfc1b74acaa819f, type: 3}
-  destroyableFloors: 0
 --- !u!4 &1200921844
 Transform:
   m_ObjectHideFlags: 0

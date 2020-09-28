@@ -4,13 +4,13 @@ using UnityEngine.UI;
 // With help from Zenya's Unity FPS Course
 
 public class Projectile : MonoBehaviour {
-    public float speed = 30f;
+    public float speed = 40f;
     public int lifeDuration = 2;
 
     [HideInInspector]
     public bool playerCrossedAllMazes; // set by player script
     [HideInInspector]
-    public Text gameOverText; // set by player script
+    public PlayerMovement playerScript; // to call game over message
 
     private float lifeTimer;
     private bool destroyedSomething = false;
@@ -42,15 +42,8 @@ public class Projectile : MonoBehaviour {
                 var point = script.shortestPath[i];
                 // Debug.Log(row + "," + column + "==" + point[0] + "," + point[1]);
 
-                if (row == point[0] && column == point[1]) {
-                    // Game Over
-                    if (playerCrossedAllMazes) {
-                        gameOverText.text = "You Win";
-                    } else {
-                        gameOverText.text = "You Lose";
-                    }
-                    Time.timeScale = 0;
-                }
+                // if you shoot a floor that is aprt of the shortest path, you either win or lose depending on which side of the destroyable maze you are on
+                playerScript.GameOverMessage(row == point[0] && column == point[1], playerCrossedAllMazes);
             }
 
             Destroy(other.gameObject);
