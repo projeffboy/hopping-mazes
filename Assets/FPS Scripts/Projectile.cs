@@ -27,7 +27,7 @@ public class Projectile : MonoBehaviour {
         if (lifeTimer <= 0f) {
             Destroy(gameObject);
 
-            AmIOutOfAmmo(); // lose if you are
+            AmIOutOfAmmo();
         }
     }
 
@@ -55,13 +55,15 @@ public class Projectile : MonoBehaviour {
         // Prevent player from colliding with projectile
         if (!other.gameObject.CompareTag("Player") /* && !other.gameObject.CompareTag("Pick Up") */) {
             Destroy(gameObject);
+        } else {
+            AmIOutOfAmmo();
         }
-
-        AmIOutOfAmmo(); // lose if you are
     }
 
-    private bool AmIOutOfAmmo() {
-        bool condition = GameObject.FindWithTag("Pick Up") == null && playerScript.projectileCount <= 0;
+    private bool AmIOutOfAmmo() { // lose if you are and the pick up is gone
+        bool condition = GameObject.FindWithTag("Pick Up") == null
+            && GameObject.FindWithTag("Projectile") == null
+            && playerScript.projectileCount <= 0;
 
         playerScript.GameOverMessage(condition, false);
 

@@ -47,7 +47,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 40
-  lifeDuration: 2
+  lifeDuration: 3
   playerCrossedAllMazes: 0
   playerScript: {fileID: 0}
 --- !u!135 &8928298835235966012

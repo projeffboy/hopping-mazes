@@ -37,6 +37,7 @@ public class HuntAndKill {
         mazeCells[currentRow, currentColumn].visited = true;
 
         while(!finishedKilling) {
+            // we kill then hunt instead of the other way around, since we are fixing (0,0) to be the first hunted cell
             KillingSpree(); // terminates when it hits dead end
             Hunt(); // find next unvisited cell for the next killing spree
         }
@@ -81,6 +82,8 @@ public class HuntAndKill {
             }
         }
     }
+
+    /* HELPER FUNCTIONS FOR HUNT AND KILL */
 
     private bool RouteStillAvailable(int row, int column) {
         // look four ways for an unvisited cell
