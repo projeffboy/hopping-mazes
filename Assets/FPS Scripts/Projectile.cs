@@ -26,6 +26,8 @@ public class Projectile : MonoBehaviour {
         lifeTimer -= Time.deltaTime;
         if (lifeTimer <= 0f) {
             Destroy(gameObject);
+
+            AmIOutOfAmmo(); // lose if you are
         }
     }
 
@@ -54,5 +56,15 @@ public class Projectile : MonoBehaviour {
         if (!other.gameObject.CompareTag("Player") /* && !other.gameObject.CompareTag("Pick Up") */) {
             Destroy(gameObject);
         }
+
+        AmIOutOfAmmo(); // lose if you are
+    }
+
+    private bool AmIOutOfAmmo() {
+        bool condition = GameObject.FindWithTag("Pick Up") == null && playerScript.projectileCount <= 0;
+
+        playerScript.GameOverMessage(condition, false);
+
+        return condition;
     }
 }

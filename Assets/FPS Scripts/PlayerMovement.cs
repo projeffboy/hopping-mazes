@@ -19,7 +19,8 @@ public class PlayerMovement : MonoBehaviour {
 
     public Text projectileCountText;
     public Text gameOverText;
-    private int projectileCount = 0;
+    [HideInInspector]
+    public int projectileCount = 0;
     private bool gameOver = false;
 
     public new Camera camera;
@@ -73,10 +74,6 @@ public class PlayerMovement : MonoBehaviour {
                 projectile.transform.forward = camera.transform.forward;
 
                 addProjectileCount(-1);
-                GameOverMessage(
-                    GameObject.FindWithTag("Pick Up") == null && projectileCount <= 0,
-                    false
-                ); // lose if out of projectiles
             }
 
             GameOverMessage(transform.position.y < -20, false); // if player is below this height you lose
@@ -98,6 +95,8 @@ public class PlayerMovement : MonoBehaviour {
     public void GameOverMessage(bool condition, bool win) {
         if (condition) {
             gameOverText.text = "You " + (win ? "Win" : "Lose");
+            gameOverText.color = win ? Color.green : Color.red;
+
             Time.timeScale = 0;
             gameOver = true;
         }

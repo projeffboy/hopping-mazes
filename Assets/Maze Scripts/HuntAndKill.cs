@@ -1,16 +1,26 @@
 using System.Collections;
 using UnityEngine;
 
+// Followed this tutorial https://www.youtube.com/watch?v=IrO4mswO2o4
+// As per TA's request, I've written the pseudocode on a piece of paper then retyped my implementation of it here
+
+enum Compass {
+    North,
+    South,
+    East,
+    West
+};  
+
 public class HuntAndKill {
     private MazeCell[,] mazeCells;
     private int mazeRows, mazeColumns;
 
+    // so the algorithm starts at (0,0)
     private int currentRow = 0;
     private int currentColumn = 0;
+    private bool finishedKilling = false;
 
-    private bool courseComplete = false;
-
-    public DFS dfs;
+    public DFS dfs; // optional, does not need to be set
 
     public HuntAndKill(MazeCell[,] mazeCells) {
         this.mazeCells = mazeCells;
@@ -19,44 +29,37 @@ public class HuntAndKill {
         mazeColumns = mazeCells.GetLength(1);
     }
 
-    public void CreateMaze() {
-        dfs = new DFS(mazeRows, mazeColumns);
-        KillThenHunt();
+    public void addDfs(DFS dfs) {
+        this.dfs = dfs;
     }
 
-    private void KillThenHunt() {
+    public void GenerateMaze() {
         mazeCells[currentRow, currentColumn].visited = true;
 
-        while(!courseComplete) {
-            Kill(); // run until hit dead end
-            Hunt(); // find next unvisited cell with adj visited cell. Otherwise, end
+        while(!finishedKilling) {
+            KillingSpree(); // terminates when it hits dead end
+            Hunt(); // find next unvisited cell for the next killing spree
         }
     }
 
-    private void Kill() {
+    private void KillingSpree() {
         while (RouteStillAvailable(currentRow, currentColumn)) {
-            int direction = Random.Range (1, 5);
+            Compass direction = (Compass) Random.Range(0, 4);
 
-            if (direction == 1 && CellIsAvailable(currentRow - 1, currentColumn)) {
-                // North
-                DestroyWallIfItExists(currentRow, currentColumn, "north");
-                DestroyWallIfItExists(currentRow - 1, currentColumn, "south");
+            if (direction == Compass.North && ValidAndUnvisitedCell(currentRow - 1, currentColumn)) {
+                // north as in destroy the south wall of the cell above
+                DestroyWall(currentRow - 1, currentColumn, "south");
                 currentRow--;
-            } else if (direction == 2 && CellIsAvailable(currentRow + 1, currentColumn)) {
-                // South
-                DestroyWallIfItExists(currentRow, currentColumn, "south");
-                DestroyWallIfItExists(currentRow + 1, currentColumn, "north");
+            } else if (direction == Compass.South && ValidAndUnvisitedCell(currentRow + 1, currentColumn)) {
+                DestroyWall(currentRow, currentColumn, "south");
                 currentRow++;
-            } else if (direction == 3 && CellIsAvailable(currentRow, currentColumn + 1)) {
-                // east
-                DestroyWallIfItExists(currentRow, currentColumn, "east");
-                DestroyWallIfItExists(currentRow, currentColumn + 1, "west");
-                currentColumn++;
-            } else if (direction == 4 && CellIsAvailable(currentRow, currentColumn - 1)) {
-                // west
-                DestroyWallIfItExists(currentRow, currentColumn, "west");
-                DestroyWallIfItExists(currentRow, currentColumn - 1, "east");
+            } else if (direction == Compass.West && ValidAndUnvisitedCell(currentRow, currentColumn - 1)) {
+                // west as in destroy the east wall of the cell to its left
+                DestroyWall(currentRow, currentColumn - 1, "east");
                 currentColumn--;
+            } else if (direction == Compass.East && ValidAndUnvisitedCell(currentRow, currentColumn + 1)) {
+                DestroyWall(currentRow, currentColumn, "east");
+                currentColumn++;
             }
 
             mazeCells[currentRow, currentColumn].visited = true;
@@ -64,130 +67,105 @@ public class HuntAndKill {
     }
 
     private void Hunt() {
-        courseComplete = true; // Set it to this, and see if we can prove otherwise below!
+        finishedKilling = true; // just an assumption
 
+        // hunt for surviving cells
         for (int r = 0; r < mazeRows; r++) {
             for (int c = 0; c < mazeColumns; c++) {
-                if (!mazeCells[r, c].visited && CellHasAnAdjacentVisitedCell(r, c)) {
-                    courseComplete = false; // Yep, we found something so definitely do another Kill cycle.
-                    currentRow = r;
-                    currentColumn = c;
-                    DestroyAdjacentWall(currentRow, currentColumn);
-                    mazeCells[currentRow, currentColumn].visited = true;
-                    return; // Exit the function
+                if (!mazeCells[r, c].visited && HasAdjVisitedCell(r, c)) { // found one >:)
+                    finishedKilling = false;
+                    DestroyAdjWall(r, c);
+                    mazeCells[r, c].visited = true;
+                    return;
                 }
             }
         }
     }
 
-
     private bool RouteStillAvailable(int row, int column) {
-        int availableRoutes = 0;
-
-        if (row > 0 && !mazeCells[row - 1, column].visited) {
-            availableRoutes++;
-        }
-
-        if (row < mazeRows - 1 && !mazeCells[row + 1, column].visited) {
-            availableRoutes++;
-        }
-
-        if (column > 0 && !mazeCells[row, column - 1].visited) {
-            availableRoutes++;
-        }
-
-        if (column < mazeColumns - 1 && !mazeCells[row, column + 1].visited) {
-            availableRoutes++;
-        }
-
-        return availableRoutes > 0;
+        // look four ways for an unvisited cell
+        return (row > 0 && !mazeCells[row - 1, column].visited)
+            || (row < mazeRows - 1 && !mazeCells[row + 1, column].visited)
+            || (column > 0 && !mazeCells[row, column - 1].visited)
+            || (column < mazeColumns - 1 && !mazeCells[row, column + 1].visited);
     }
 
-    private bool CellIsAvailable(int row, int column) {
-        if (row >= 0 && row < mazeRows && column >= 0 && column < mazeColumns && !mazeCells[row, column].visited) {
-            return true;
-        } else {
-            return false;
-        }
+    private bool ValidAndUnvisitedCell(int row, int column) {
+            // make sure it doesn't go out of bounds
+        return 0 <= row && row < mazeRows
+            && 0 <= column && column < mazeColumns
+            // unvisited
+            && !mazeCells[row, column].visited;
     }
 
-    private void DestroyWallIfItExists(int row, int column, string compassPoint) {
-        GameObject wall = mazeCells[row, column].GetWall(compassPoint);
+    private void DestroyWall(int row, int column, string compassDirection) {
+        GameObject wall = mazeCells[row, column].GetWall(compassDirection);
 
         if (wall != null) {
-            GameObject.Destroy(wall);
+            wall.SetActive(false);
 
-            int linkedRow = row;
-            int linkedColumn = column;
-            switch (compassPoint) {
-                case "north":
-                    linkedRow -= 1;
-                    break;
-                case "south":
-                    linkedRow += 1;
-                    break;
-                case "east":
-                    linkedColumn += 1;
-                    break;
-                case "west":
-                    linkedColumn -= 1;
-                    break;
+            if (dfs != null) {
+                int linkedRow = row;
+                int linkedColumn = column;
+
+                switch (compassDirection) {
+                    case "south":
+                        linkedRow += 1;
+                        break;
+                    case "east":
+                        linkedColumn += 1;
+                        break;
+                }
+                dfs.addEdge(new[] { row, column }, new[] { linkedRow, linkedColumn }); // delete wall = add edge
             }
-            dfs.addEdge(new[] { row, column }, new[] { linkedRow, linkedColumn });
         }
     }
 
-    private bool CellHasAnAdjacentVisitedCell(int row, int column) {
-        int visitedCells = 0;
-
-        // Look 1 row up (north) if we're on row 1 or greater
-        if (row > 0 && mazeCells[row - 1, column].visited) {
-            visitedCells++;
-        }
-
-        // Look one row down (south) if we're the second-to-last row (or less)
-        if (row < (mazeRows - 2) && mazeCells[row + 1, column].visited) {
-            visitedCells++;
-        }
-
-        // Look one row left (west) if we're column 1 or greater
-        if (column > 0 && mazeCells[row, column - 1].visited) {
-            visitedCells++;
-        }
-
-        // Look one row right (east) if we're the second-to-last column (or less)
-        if (column < (mazeColumns - 2) && mazeCells[row, column + 1].visited) {
-            visitedCells++;
-        }
-
-        // return true if there are any adjacent visited cells to this one
-        return visitedCells > 0;
+    private bool HasAdjVisitedCell(int row, int column) {
+        // check all 4 adj cells
+        return (row > 0 && mazeCells[row - 1, column].visited)
+            || (row < (mazeRows - 2) && mazeCells[row + 1, column].visited)
+            || (column > 0 && mazeCells[row, column - 1].visited)
+            || (column < (mazeColumns - 2) && mazeCells[row, column + 1].visited);
     }
 
-    private void DestroyAdjacentWall(int row, int column) {
-        bool wallDestroyed = false;
+    private void DestroyAdjWall(int row, int column) {
+        bool destroyedWall = false;
 
-        while (!wallDestroyed) {
-            int direction = Random.Range (1, 5);
+        while (!destroyedWall) {
+            Compass direction = (Compass)Random.Range(0, 4);
 
-            if (direction == 1 && row > 0 && mazeCells[row - 1, column].visited) {
-                DestroyWallIfItExists(row, column, "north");
-                DestroyWallIfItExists(row - 1, column, "south");
-                wallDestroyed = true;
-            } else if (direction == 2 && row < (mazeRows - 2) && mazeCells[row + 1, column].visited) {
-                DestroyWallIfItExists(row, column, "south");
-                DestroyWallIfItExists(row + 1, column, "north");
-                wallDestroyed = true;
-            } else if (direction == 3 && column > 0 && mazeCells[row, column - 1].visited) {
-                DestroyWallIfItExists(row, column, "west");
-                DestroyWallIfItExists(row, column - 1, "east");
-                wallDestroyed = true;
-            } else if (direction == 4 && column < (mazeColumns - 2) && mazeCells[row, column + 1].visited) {
-                DestroyWallIfItExists(row, column, "east");
-                DestroyWallIfItExists(row, column + 1, "west");
-                wallDestroyed = true;
+            if (
+                direction == Compass.North
+                && row > 0
+                && mazeCells[row - 1, column].visited
+            ) {
+                // north as in destroy the south wall of the cell above
+                DestroyWall(row - 1, column, "south");
+            } else if (
+                direction == Compass.South
+                && row < mazeRows - 2
+                && mazeCells[row + 1, column].visited
+            ) {
+                DestroyWall(row, column, "south");
+            } else if (
+                direction == Compass.West
+                && column > 0
+                && mazeCells[row, column - 1].visited
+            ) {
+                // west as in destroy the east wall of the cell to its left
+                DestroyWall(row, column - 1, "east");
+            } else if (
+                direction == Compass.East
+                && column < mazeColumns - 2
+                && mazeCells[row, column + 1].visited
+            ) {
+                DestroyWall(row, column, "east");
+            } else {
+                continue;
             }
-        }
 
+            destroyedWall = true;
+        }
     }
 }
