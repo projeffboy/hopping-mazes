@@ -15,9 +15,9 @@ public class HuntAndKill {
     private MazeCell[,] mazeCells;
     private int mazeRows, mazeColumns;
 
-    // so the algorithm starts at (0,0)
+    // so the algorithm starts at (0,2), because that's where the player spawns
     private int currentRow = 0;
-    private int currentColumn = 0;
+    private int currentColumn = 2;
     private bool finishedKilling = false;
 
     public DFS dfs; // optional, does not need to be set
@@ -47,18 +47,30 @@ public class HuntAndKill {
         while (RouteStillAvailable(currentRow, currentColumn)) {
             Compass direction = (Compass) Random.Range(0, 4);
 
-            if (direction == Compass.North && ValidAndUnvisitedCell(currentRow - 1, currentColumn)) {
+            if (
+                direction == Compass.North
+                && ValidAndUnvisitedCell(currentRow - 1, currentColumn)
+            ) {
                 // north as in destroy the south wall of the cell above
                 DestroyWall(currentRow - 1, currentColumn, "south");
                 currentRow--;
-            } else if (direction == Compass.South && ValidAndUnvisitedCell(currentRow + 1, currentColumn)) {
+            } else if (
+                direction == Compass.South
+                && ValidAndUnvisitedCell(currentRow + 1, currentColumn)
+            ) {
                 DestroyWall(currentRow, currentColumn, "south");
                 currentRow++;
-            } else if (direction == Compass.West && ValidAndUnvisitedCell(currentRow, currentColumn - 1)) {
+            } else if (
+                direction == Compass.West
+                && ValidAndUnvisitedCell(currentRow, currentColumn - 1)
+            ) {
                 // west as in destroy the east wall of the cell to its left
                 DestroyWall(currentRow, currentColumn - 1, "east");
                 currentColumn--;
-            } else if (direction == Compass.East && ValidAndUnvisitedCell(currentRow, currentColumn + 1)) {
+            } else if (
+                direction == Compass.East
+                && ValidAndUnvisitedCell(currentRow, currentColumn + 1)
+            ) {
                 DestroyWall(currentRow, currentColumn, "east");
                 currentColumn++;
             }
@@ -72,7 +84,7 @@ public class HuntAndKill {
 
         // hunt for surviving cells
         for (int r = 0; r < mazeRows; r++) {
-            for (int c = 0; c < mazeColumns; c++) {
+            for (int c = 0; c < mazeColumns; c++) { // i thought randomizing whether the hunt phase starts from the left or right column would make the maze more random, but that would create loops
                 if (!mazeCells[r, c].visited && HasAdjVisitedCell(r, c)) { // found one >:)
                     finishedKilling = false;
                     DestroyAdjWall(r, c);
@@ -136,7 +148,7 @@ public class HuntAndKill {
         bool destroyedWall = false;
 
         while (!destroyedWall) {
-            Compass direction = (Compass)Random.Range(0, 4);
+            Compass direction = (Compass) Random.Range(0, 4);
 
             if (
                 direction == Compass.North

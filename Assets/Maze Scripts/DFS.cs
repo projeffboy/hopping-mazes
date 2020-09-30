@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -67,7 +68,10 @@ public class DFS {
     }
 
     public int[][] GetShortestPath() {
-        return shortestPath.ToArray(); // originally a stack
+        var array = shortestPath.ToArray(); // originally a stack
+        Array.Reverse(array); // reversed because of stack's FILO nature
+
+        return array;
     }
 
     // Debugging Purposes
@@ -79,6 +83,7 @@ public class DFS {
         } else {
             while (shortestPathStack.Count != 0) {
                 int[] point = shortestPathStack.Pop();
+                // result will be reversed (not bothered to change it)
                 Debug.Log("(" + point[0] + "," + point[1] + ")");
             }
         }

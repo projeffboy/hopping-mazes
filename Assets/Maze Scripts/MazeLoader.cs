@@ -73,7 +73,7 @@ public class MazeLoader : MonoBehaviour {
                 // before tile
                 int[] pointBefore;
                 if (i == 0) { // since the array came from a stack, 0 is the end tile
-                    pointBefore = new int[] { mazeRows, mazeColumns / 2 };
+                    pointBefore = new int[] { -1, mazeColumns / 2 };
                 } else {
                     pointBefore = shortestPath[i - 1];
                 }
@@ -88,7 +88,7 @@ public class MazeLoader : MonoBehaviour {
                 // after tile
                 int[] pointAfter;
                 if (i == shortestPath.Length - 1) {
-                    pointAfter = new int[] { - 1, mazeColumns / 2 };
+                    pointAfter = new int[] { mazeRows, mazeColumns / 2 };
                 } else {
                     pointAfter = shortestPath[i + 1];
                 }
@@ -107,13 +107,25 @@ public class MazeLoader : MonoBehaviour {
                 }
 
                 // Corner tiles
-                else if ((p_0z + 1 == p_z && p_x + 1 == p_1x) || (p_1z + 1 == p_z && p_x + 1 == p_0x)) {
+                else if (
+                    (p_0z + 1 == p_z && p_x + 1 == p_1x)
+                    || (p_1z + 1 == p_z && p_x + 1 == p_0x)
+                ) {
                     setFloorMaterial(cell, "road-bottom-right-corner"); // like for the straight line tiles, the materials comes out flipped, this is supposed to be road-top-left-corner
-                } else if ((p_0x + 1 == p_x && p_z == p_1z + 1) || (p_1x + 1 == p_x && p_z == p_0z + 1)) {
+                } else if (
+                    (p_0x + 1 == p_x && p_z == p_1z + 1)
+                    || (p_1x + 1 == p_x && p_z == p_0z + 1)
+                ) {
                     setFloorMaterial(cell, "road-bottom-left-corner"); // see above comment
-                } else if ((p_0z == p_z + 1 && p_x  + 1 == p_1x) || (p_1z == p_z + 1 && p_x + 1 == p_0x)) {
+                } else if (
+                    (p_0z == p_z + 1 && p_x  + 1 == p_1x)
+                    || (p_1z == p_z + 1 && p_x + 1 == p_0x)
+                ) {
                     setFloorMaterial(cell, "road-top-right-corner");
-                } else if ((p_0x + 1 == p_x && p_z + 1 == p_1z) || (p_1x + 1== p_x && p_z + 1 == p_0z)) { // it could curve from the top or the side
+                } else if (
+                    (p_0x + 1 == p_x && p_z + 1 == p_1z)
+                    || (p_1x + 1== p_x && p_z + 1 == p_0z)
+                ) { // it could curve from the top or the side
                     setFloorMaterial(cell, "road-top-left-corner");
                 }
 

@@ -96,6 +96,9 @@ public class PlayerMovement : MonoBehaviour {
         if (condition) {
             gameOverText.text = "You " + (win ? "Win" : "Lose");
             gameOverText.color = win ? Color.green : Color.red;
+            if (win) {
+                GetComponent<AudioSource>().Play();
+            }
 
             Time.timeScale = 0;
             gameOver = true;
