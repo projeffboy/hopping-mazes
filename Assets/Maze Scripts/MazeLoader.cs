@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEditor;
 
 // Followed this tutorial https://www.youtube.com/watch?v=IrO4mswO2o4 but heavily modified and improved
 // Tiles: https://opengameart.org/content/road-and-water-tiles-from-isometric-set
@@ -13,9 +12,14 @@ public class MazeLoader : MonoBehaviour {
     public bool endDoorExists = false; // for leaving a maze
 
     public bool destroyAllInnerWalls = false; // for the first maze
-    public Material floorMaterial;
-    public bool highlightPath = false; // for the first maze
-    public bool intricateHighlightPath = false; // looks really nice!
+    public Material floorMaterial,
+        highlightPathMaterial,
+        roadVertical,
+        roadHorizontal,
+        roadBottomRightCorner,
+        roadBottomLeftCorner,
+        roadTopRightCorner,
+        roadTopLeftCorner;
     public bool spawnProjectiles = false;
 
     // NOTE FOR TA: if you fall off too many times in the second maze, change floorMult back to 1.
@@ -68,7 +72,14 @@ public class MazeLoader : MonoBehaviour {
         );
         shortestPath = dfs.GetShortestPath();
 
-        if (intricateHighlightPath) { // shows tilemaps
+        if (
+            roadVertical != null
+            && roadHorizontal != null
+            && roadBottomRightCorner != null
+            && roadBottomLeftCorner != null
+            && roadTopRightCorner != null
+            && roadTopLeftCorner != null
+        ) { // shows tilemaps
             for (int i = 0; i < shortestPath.Length; i++) {
                 // before tile
                 int[] pointBefore;
@@ -99,10 +110,10 @@ public class MazeLoader : MonoBehaviour {
 
                 // Straight lines
                 if (p_0x == p_x && p_x == p_1x) {
-                    setFloorMaterial(cell, "road-vertical");
+                    setFloorMaterial(cell, roadVertical);
                     // for some reason, my horizontal tile shows up as vertical in the game, but whatever
                 } else if (p_0z == p_z && p_z == p_1z) {
-                    setFloorMaterial(cell, "road-horizontal");
+                    setFloorMaterial(cell, roadHorizontal);
                     // and likewise for vertical tile
                 }
 
@@ -111,35 +122,35 @@ public class MazeLoader : MonoBehaviour {
                     (p_0z + 1 == p_z && p_x + 1 == p_1x)
                     || (p_1z + 1 == p_z && p_x + 1 == p_0x)
                 ) {
-                    setFloorMaterial(cell, "road-bottom-right-corner"); // like for the straight line tiles, the materials comes out flipped, this is supposed to be road-top-left-corner
+                    setFloorMaterial(cell, roadBottomRightCorner); // like for the straight line tiles, the materials comes out flipped, this is supposed to be road-top-left-corner
                 } else if (
                     (p_0x + 1 == p_x && p_z == p_1z + 1)
                     || (p_1x + 1 == p_x && p_z == p_0z + 1)
                 ) {
-                    setFloorMaterial(cell, "road-bottom-left-corner"); // see above comment
+                    setFloorMaterial(cell, roadBottomLeftCorner); // see above comment
                 } else if (
                     (p_0z == p_z + 1 && p_x  + 1 == p_1x)
                     || (p_1z == p_z + 1 && p_x + 1 == p_0x)
                 ) {
-                    setFloorMaterial(cell, "road-top-right-corner");
+                    setFloorMaterial(cell, roadTopRightCorner);
                 } else if (
                     (p_0x + 1 == p_x && p_z + 1 == p_1z)
                     || (p_1x + 1== p_x && p_z + 1 == p_0z)
                 ) { // it could curve from the top or the side
-                    setFloorMaterial(cell, "road-top-left-corner");
+                    setFloorMaterial(cell, roadTopLeftCorner);
                 }
 
                 // In case of failure
                 else {
-                    setFloorMaterial(cell, "Wall Material");
+                    setFloorMaterial(cell, highlightPathMaterial);
                 }
             }
-        } else if (highlightPath) {
+        } else if (highlightPathMaterial != null) {
             for (int i = 0; i < shortestPath.Length; i++) {
                 var point = shortestPath[i];
                 var cell = mazeCells[point[0], point[1]];
 
-                setFloorMaterial(cell, "Wall Material");
+                setFloorMaterial(cell, highlightPathMaterial);
             }
         }
 
@@ -147,9 +158,8 @@ public class MazeLoader : MonoBehaviour {
         GeneratePickUps(shortestPath);
     }
 
-    private void setFloorMaterial(MazeCell cell, string materialName) {
-        cell.floor.GetComponent<MeshRenderer>().material
-            = (Material) AssetDatabase.LoadAssetAtPath("Assets/Materials/" + materialName + ".mat", typeof(Material));
+    private void setFloorMaterial(MazeCell cell, Material material) {
+        cell.floor.GetComponent<MeshRenderer>().material = material;
     }
 
     private void InitFloorAndWalls() {

@@ -1122,8 +1122,13 @@ MonoBehaviour:
   endDoorExists: 1
   destroyAllInnerWalls: 0
   floorMaterial: {fileID: 2100000, guid: aac0fac2236d88a49aa9d2fa23bfcf6e, type: 2}
-  highlightPath: 0
-  intricateHighlightPath: 0
+  highlightPathMaterial: {fileID: 0}
+  roadVertical: {fileID: 0}
+  roadHorizontal: {fileID: 0}
+  roadBottomRightCorner: {fileID: 0}
+  roadBottomLeftCorner: {fileID: 0}
+  roadTopRightCorner: {fileID: 0}
+  roadTopLeftCorner: {fileID: 0}
   spawnProjectiles: 0
   floorMult: 0.55
   destroyableFloors: 1
@@ -1366,8 +1371,16 @@ MonoBehaviour:
   endDoorExists: 1
   destroyAllInnerWalls: 1
   floorMaterial: {fileID: 2100000, guid: ffa9f731b331c2e40a2d09ecab6118c2, type: 2}
-  highlightPath: 1
-  intricateHighlightPath: 1
+  highlightPathMaterial: {fileID: 2100000, guid: 982e58e35433d734c96ed98619ebdecb,
+    type: 2}
+  roadVertical: {fileID: 2100000, guid: e856e5122b981d74b8f3576f593bdb95, type: 2}
+  roadHorizontal: {fileID: 2100000, guid: 10062b29c73daf742bd4df2b7401c043, type: 2}
+  roadBottomRightCorner: {fileID: 2100000, guid: a595fd592b3985d408f9406c0092d381,
+    type: 2}
+  roadBottomLeftCorner: {fileID: 2100000, guid: a030e64275cf7b241a761db05f6685a3,
+    type: 2}
+  roadTopRightCorner: {fileID: 2100000, guid: b0a2e41d1253b3548b84da96ac2cee66, type: 2}
+  roadTopLeftCorner: {fileID: 2100000, guid: 80eae88cc79e44343b8f921d3669ed3e, type: 2}
   spawnProjectiles: 0
   floorMult: 1
   destroyableFloors: 0
